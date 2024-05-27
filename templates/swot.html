@@ -12,6 +12,7 @@
           border-collapse: collapse;
           width: 100%;
         }
+        
         .quadrant-table th, .quadrant-table td {
           border: 1px solid #ddd;
           padding: 8px;
@@ -28,7 +29,7 @@
         {{ success_message }}
     </div>
     {% endif %}
-    <form action="{% url 'addswot' %}" method="post">
+    <form action="{% url 'addswot' %}" method="post" id="add_swot">
         {% csrf_token %}
         <label for="title">Title</label><br>
         <input type="text" id="title" name="title"><br>
@@ -60,7 +61,7 @@
                 </td>
             </tr>
         </table>
-        <button type="submit">保存</button>
+        <button type="button" onclick="submitForm()">保存</button>
     </form>
     <table class="quadrant-table">
         <tr>

@@ -14,6 +14,16 @@
         <li>{{ idea.category }}: {{ idea.content }}</li>
         {% endfor %}
     </ul>
+    <ul>
+        {% for category, ideas in swot_ideas.items %}
+            <h2>{{ category }}</h2>
+            <ul>
+                {% for idea in ideas %}
+                    <li>{{ idea.content }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </ul>
     <h1>バージョン2</h1>
     <table class="quadrant-table">
         <!-- 1行目 -->
@@ -63,5 +73,9 @@
             </td>
         </tr>
     </table>
+    <div>
+        <a href="">edit</a>
+        <p>delete</p>
+    </div>
 </body>
 </html>
