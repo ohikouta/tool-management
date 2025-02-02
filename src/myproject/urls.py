@@ -16,8 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
-from src.views import index, user_profile, hello_view, to_swot, add_swot, idea_detail
-from . import views
+from src.app.views import index, user_profile, hello_view, to_swot, add_swot, idea_detail
+from src.app import views
 
 
 urlpatterns = [
