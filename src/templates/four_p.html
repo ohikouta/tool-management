@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4P分析</title>
+</head>
+<body>
+  <h1>4P分析</h1>
+  
+  <!-- 4Pの説明・概要 -->
+  <section>
+    <h2>4Pとは？</h2>
+    <p>4P分析は、製品(Product)、価格(Price)、流通(Place)、販促(Promotion)の4つの視点からビジネス戦略を評価する手法です。</p>
+  </section>
+
+  <!-- 入力フォーム -->
+  <section>
+    <h2>4P分析の入力フォーム</h2>
+    <form method="post">
+      {% csrf_token %}
+      <div>
+        <label for="id_overview">概要</label>
+        {{ form.overview }}
+      </div>
+      <div>
+        <label for="id_memo">プロジェクトメモ</label>
+        {{ form.memo }}
+      </div>
+      <div>
+        <label for="id_product">製品</label>
+        {{ form.product }}
+      </div>
+      <div>
+        <label for="id_price">価格</label>
+        {{ form.price }}
+      </div>
+      <div>
+        <label for="id_place">流通</label>
+        {{ form.place }}
+      </div>
+      <div>
+        <label for="id_promotion">販促</label>
+        {{ form.promotion }}
+      </div>
+      <button type="submit">送信</button>
+    </form>
+  </section>
+</body>
+</html>

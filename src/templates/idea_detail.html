@@ -1,0 +1,81 @@
+<!-- idea_detail.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} Ideas</title>
+</head>
+<body>
+    <h1>{{ title }} Ideas</h1>
+    <ul>
+        {% for idea in swotideas %}
+        <li>{{ idea.category }}: {{ idea.content }}</li>
+        {% endfor %}
+    </ul>
+    <ul>
+        {% for category, ideas in swot_ideas.items %}
+            <h2>{{ category }}</h2>
+            <ul>
+                {% for idea in ideas %}
+                    <li>{{ idea.content }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </ul>
+    <h1>バージョン2</h1>
+    <table class="quadrant-table">
+        <!-- 1行目 -->
+        <tr>
+            <td>
+                <p>強み</p>
+                {% for idea in swotideas %}
+                    {% if idea.category == 'Strengths' %}
+                        <li>{{ idea.content }}</li>
+                    {% endif %}
+                {% endfor %}
+                <input type="text" name="strengths"><br>
+                <a href="#" id="strengths_add" onclick="addInputField('strengths')">add</a>
+            </td>
+            <td>
+                <p>弱み</p>
+                {% for idea in swotideas %}
+                    {% if idea.category == 'Weaknesses' %}
+                        <li>{{ idea.content }}</li>
+                    {% endif %}
+                {% endfor %}
+                <input type="text" name="weaknesses"><br>
+                <a href="#" id="weakness_add" onclick="addInputField('weakness')">add</a>
+            </td>
+        </tr>
+        <!-- 2行目 -->
+        <tr>
+            <td>
+                <p>機会</p>
+                {% for idea in swotideas %}
+                    {% if idea.category == 'Opportunity' %}
+                        <li>{{ idea.content }}</li>
+                    {% endif %}
+                {% endfor %}
+                <input type="text" name="opportunities"><br>
+                <a href="">add</a>
+            </td>
+            <td>
+                <p>脅威</p>
+                {% for idea in swotideas %}
+                    {% if idea.category == 'Threats' %}
+                        <li>{{ idea.content }}</li>
+                    {% endif %}
+                {% endfor %}
+                <input type="text" name="threats"><br>
+                <a href="">add</a>
+            </td>
+        </tr>
+    </table>
+    <div>
+        <a href="">edit</a>
+        <p>delete</p>
+    </div>
+</body>
+</html>

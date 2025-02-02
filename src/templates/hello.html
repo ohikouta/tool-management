@@ -1,0 +1,50 @@
+<!-- templates/hello.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Template</title>
+    <style>
+        .quadrant-table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        .quadrant-table th, .quadrant-table td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: center;
+        }
+      </style>
+</head>
+<body>
+    <h1>Hello, {{ name }}!</h1>
+    <div>
+        <h2>フレームワーク</h2>
+        <p>SWOT</p>
+        <a href="swot/">->SWOT分析</a>
+        <p>4P</p>
+        <a href="four-p/">4P分析</a>
+        <p>3C</p>
+        <h2>財務分析セクション</h2>
+        <!-- <a href="https://k-sindan.smrj.go.jp/">経営自己診断システム</a> -->
+    </div>
+    <table class="quadrant-table">
+        <tr>
+          <th></th>
+          <th>Quadrant 1</th>
+          <th>Quadrant 2</th>
+        </tr>
+        <tr>
+          <th>Category 1</th>
+          <td>Item 1-1</td>
+          <td>Item 1-2</td>
+        </tr>
+        <tr>
+          <th>Category 2</th>
+          <td>Item 2-1</td>
+          <td>Item 2-2</td>
+        </tr>
+      </table>
+</body>
+</html>

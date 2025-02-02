@@ -1,0 +1,99 @@
+<!-- templates/swot.html -->
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make SWOT</title>
+    <style>
+        .quadrant-table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        .quadrant-table th, .quadrant-table td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: center;
+        }
+      </style>
+      <script src="{% static 'js/swot.js' %}"></script>
+</head>
+<body>
+    <h1>SWOT作成画面</h1>
+    <!-- 成功したらメッセージを表示させる -->
+    {% if success_message %}
+    <div class="alert alert-success">
+        {{ success_message }}
+    </div>
+    {% endif %}
+    <form action="{% url 'addswot' %}" method="post" id="add_swot">
+        {% csrf_token %}
+        <label for="title">Title</label><br>
+        <input type="text" id="title" name="title"><br>
+        <table class="quadrant-table">
+            <!-- 1行目 -->
+            <tr>
+                <td>
+                    <p>強み</p>
+                    <input type="text" name="strengths"><br>
+                    <a href="#" id="strengths_add" onclick="addInputField('strengths')">add</a>
+                </td>
+                <td>
+                    <p>弱み</p>
+                    <input type="text" name="weaknesses"><br>
+                    <a href="#" id="weakness_add" onclick="addInputField('weakness')">add</a>
+                </td>
+            </tr>
+            <!-- 2行目 -->
+            <tr>
+                <td>
+                    <p>機会</p>
+                    <input type="text" name="opportunities"><br>
+                    <a href="">add</a>
+                </td>
+                <td>
+                    <p>脅威</p>
+                    <input type="text" name="threats"><br>
+                    <a href="">add</a>
+                </td>
+            </tr>
+        </table>
+        <button type="button" onclick="submitForm()">保存</button>
+    </form>
+    <table class="quadrant-table">
+        <tr>
+            <th></th>
+            <th>Strengths</th>
+            <th>Weaknesses</th>
+        </tr>
+        <tr>
+            <th>Opportunities</th>
+            <td><input type="text" name="opportunity_strengths"></td>
+            <td><input type="text" name="opportunity_weaknesses"></td>
+        </tr>
+        <tr>
+            <th>Threats</th>
+            <td><input type="text" name="threat_strengths"></td>
+            <td><input type="text" name="threat_weaknesses"></td>
+        </tr>
+    </table>
+    <div>
+        <h2>作成したSWOT</h2>
+        <ul>
+            {% for swot in swots %}
+            <li><a href="{% url 'idea_detail' swot.id %}">{{ swot.title }}</a></li>
+            <form action="{% url 'delete_swot' swot.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">削除</button>
+            </form>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    
+    
+</body>
+</html>

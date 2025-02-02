@@ -1,0 +1,23 @@
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ユーザープロフィール</title>
+  <style>
+    /* 共通のスタイルやレイアウトがあれば追加 */
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .header { border-bottom: 1px solid #ccc; margin-bottom: 20px; }
+    .profile-info { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>ようこそ、{{ user.username }}さん</h1>
+  </div>
+  <div class="profile-info">
+    <p><strong>メール:</strong> {{ user.email }}</p>
+    <!-- 必要に応じて、他のユーザー情報（例：first_name, last_name など）も表示 -->
+  </div>
+  <p><a href="{% url 'logout' %}">ログアウト</a></p>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Python関連
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# SQLiteデータベース
+db.sqlite3
+
+# Django静的ファイル
+/static/
+
+# Docker関連
+*.log
+*.pid
+.vscode
+.DS_Store
+
+# IDE/エディタ関連
+.idea/
+*.swp
