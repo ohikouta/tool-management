@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('src', '0004_fourpanalysis'),
+        ('app', '0004_fourpanalysis'),
     ]
 
     operations = [

@@ -8,6 +8,11 @@ from .forms import FourPAnalysisForm, SignUpForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
+
+
 def index(request):
     return render(request, 'index.html')
 
@@ -155,10 +160,3 @@ def delete_swot(request, id):
         return redirect('swot_list')
     return HttpResponseForbidden()
 
-"""
-Strengths: 強いな
-Weaknesses: 弱いな
-Opportunity: 機会だな
-Threats: 脅威だな
-
-"""

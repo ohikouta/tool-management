@@ -15,13 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import path
+from django.urls import path, re_path, include
+from django.views.generic import TemplateView
 from src.app.views import index, user_profile, hello_view, to_swot, add_swot, idea_detail
 from src.app import views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # APIエンドポイントは/api/以下で提供する
+    path('api/', include('src.app.api_urls')),  # API用のURL設定（DRFなど）
     path('', views.index, name='index'),  # ログイン前のトップページ
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
@@ -33,6 +36,8 @@ urlpatterns = [
     path('hello/swot/idea_detail/<int:id>', idea_detail, name='idea_detail'),
     path('swot/<int:id>/delete/', views.delete_swot, name='delete_swot'),
     path('hello/four-p/', views.four_p, name='four_p_display'), 
+    # Reactアプリケーションのエントリーポイント
+    re_path(r'^(?:.*)/?$', TemplateView.as_view(template_name="index.html")),
 ]
 
 
