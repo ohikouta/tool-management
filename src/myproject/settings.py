@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'src.app',
+    'app',
     'corsheaders',
     'rest_framework',
 ]
@@ -102,4 +102,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/profile/'
 LOGOUT_REDIRECT_URL = '/'
 
-CORS_ORIGIN_ALLOW_ALL = True 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        # 必要に応じて他のAuthenticationクラスも
+    ],
+    # 必要に応じてPermissionやその他設定
+}
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',  # フロントエンドのオリジン
+]
+
+CORS_ALLOW_CREDENTIALS = True

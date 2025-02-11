@@ -15,29 +15,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import path, re_path, include
-from django.views.generic import TemplateView
-from src.app.views import index, user_profile, hello_view, to_swot, add_swot, idea_detail
-from src.app import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from app.views import CurrentUserView, UserLogoutView, UserRegistrationView, UserLoginView, SWOTAnalysisViewSet, csrf_token_view
 
+# DRFのDefaultRouterを利用してSWOTAnalysisViewSetのエンドポイントを自動生成
+router = DefaultRouter()
+router.register(r'swot-analysis', SWOTAnalysisViewSet, basename='swot-analysis')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # APIエンドポイントは/api/以下で提供する
-    path('api/', include('src.app.api_urls')),  # API用のURL設定（DRFなど）
-    path('', views.index, name='index'),  # ログイン前のトップページ
-    path('login/', auth_views.LoginView.as_view(), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('signup/', views.signup, name='signup'),
-    path('profile/', user_profile, name='profile'),
-    path('hello/', hello_view, name='hello'),
-    path('hello/swot/', to_swot, name='swot'),
-    path('hello/swot/post', add_swot, name='addswot'),
-    path('hello/swot/idea_detail/<int:id>', idea_detail, name='idea_detail'),
-    path('swot/<int:id>/delete/', views.delete_swot, name='delete_swot'),
-    path('hello/four-p/', views.four_p, name='four_p_display'), 
-    # Reactアプリケーションのエントリーポイント
-    re_path(r'^(?:.*)/?$', TemplateView.as_view(template_name="index.html")),
+    path('api/auth/register/', UserRegistrationView.as_view(), name='api_register'),
+    path('api/auth/login/', UserLoginView.as_view(), name='api_login'),
+    path('api/auth/logout/', UserLogoutView.as_view(), name='api_logout'),
+    path('api/csrf/', csrf_token_view, name='csrf'),
+    path('api/current-user/', CurrentUserView.as_view(), name='current-user'),
+    # DRFのルーターで生成されたAPIエンドポイントを/api/以下に統合
+    path('api/', include(router.urls)),
 ]
 
 

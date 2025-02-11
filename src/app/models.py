@@ -34,3 +34,31 @@ class FourPAnalysis(models.Model):
     def __str__(self):
         return f"4P分析 {self.id}"
 
+
+
+# 2025/02/05追加
+class SWOTAnalysis(models.Model):
+    """SWOT分析のメタ情報を管理"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class SWOTItem(models.Model):
+    """SWOTの各要素（強み、弱み、機会、脅威）を個別管理"""
+    CATEGORY_CHOICES = [
+        ('Strength', 'Strength'),
+        ('Weakness', 'Weakness'),
+        ('Opportunity', 'Opportunity'),
+        ('Threat', 'Threat'),
+    ]
+    
+    analysis = models.ForeignKey(SWOTAnalysis, on_delete=models.CASCADE, related_name="items")
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.category}: {self.content[:30]}..."
