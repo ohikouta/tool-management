@@ -1,4 +1,3 @@
-// src/components/SWOTForm.jsx
 import React, { useState } from 'react';
 
 const SwotForm = ({ onSuccess }) => {

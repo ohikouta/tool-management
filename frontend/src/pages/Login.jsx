@@ -9,15 +9,25 @@ function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const getCsrfToken = () => {
+    const match = document.cookie.match(/csrftoken=([\w-]+)/);
+    return match ? match[1] : null;
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const csrfToken = getCsrfToken();
+
     const response = await fetch('http://localhost:8000/api/auth/login/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
       credentials: 'include',
       body: JSON.stringify(formData),
     });

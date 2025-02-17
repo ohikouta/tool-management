@@ -1,5 +1,4 @@
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -11,11 +10,14 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, permissions
-from .models import SWOTAnalysis
+from .models import SWOTAnalysis, CrossSWOT, Project
 
 # Serializerの読み込み
-from .serializers import SWOTAnalysisSerializer
-from .serializers import UserRegistrationSerializer
+from .serializers import (SWOTAnalysisSerializer, 
+                          CrossSWOTSerializer, 
+                          UserRegistrationSerializer,
+                          ProjectSerializer
+                          )
 
 
 @ensure_csrf_cookie
@@ -36,7 +38,6 @@ class CurrentUserView(APIView):
             'username': user.username,
             'email': user.email
         })
-
 
 class UserRegistrationView(APIView):
     def post(self, request, format=None):
@@ -77,3 +78,21 @@ class SWOTAnalysisViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # 現在のユーザーを分析に紐づける
         serializer.save(user=self.request.user)
+
+class CrossSWOTViewSet(viewsets.ModelViewSet):
+    serializer_class = CrossSWOTSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return CrossSWOT.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class ProjectViewSet(viewsets.ModelViewSet):
+    serializer_class = ProjectSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Project.objects.filter(user=self.request.user)
+

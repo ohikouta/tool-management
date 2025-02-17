@@ -17,11 +17,22 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from app.views import CurrentUserView, UserLogoutView, UserRegistrationView, UserLoginView, SWOTAnalysisViewSet, csrf_token_view
+from app.views import (
+    CurrentUserView, 
+    UserLogoutView, 
+    UserRegistrationView, 
+    UserLoginView, 
+    SWOTAnalysisViewSet, 
+    CrossSWOTViewSet,
+    csrf_token_view,
+    ProjectViewSet,
+)
 
 # DRFのDefaultRouterを利用してSWOTAnalysisViewSetのエンドポイントを自動生成
 router = DefaultRouter()
 router.register(r'swot-analysis', SWOTAnalysisViewSet, basename='swot-analysis')
+router.register(r'cross-swot', CrossSWOTViewSet, basename='cross-swot')
+router.register(r'projects', ProjectViewSet, basename='projects')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

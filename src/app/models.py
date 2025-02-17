@@ -36,7 +36,6 @@ class FourPAnalysis(models.Model):
 
 
 
-# 2025/02/05追加
 class SWOTAnalysis(models.Model):
     """SWOT分析のメタ情報を管理"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -62,3 +61,31 @@ class SWOTItem(models.Model):
 
     def __str__(self):
         return f"{self.category}: {self.content[:30]}..."
+
+class CrossSWOT(models.Model):
+    parent_swot = models.ForeignKey(SWOTAnalysis, on_delete=models.CASCADE, related_name='cross_swot')
+    title = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # 必要なら、userも保存。通常は親のSWOTと同じであれば自動的に紐づく
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CrossSWOTItem(models.Model):
+    QUADRANT_CHOICES = [
+        ('SO', '強み×機会'),
+        ('WO', '弱み×機会'),
+        ('ST', '強み×脅威'),
+        ('WT', '弱み×脅威'),
+    ]
+    cross_swot = models.ForeignKey(CrossSWOT, on_delete=models.CASCADE, related_name='items')
+    quadrant = models.CharField(max_length=2,choices=QUADRANT_CHOICES)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class Project(models.Model):
+    start_date = models.DateField()
+    name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.year} - {self.name}"
+

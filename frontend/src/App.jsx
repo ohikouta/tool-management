@@ -6,6 +6,8 @@ import SwotPage from './pages/SwotPage';
 import FourPPage from './pages/FourPPage';
 import ProtectedRoute from './routes/ProtectedRoute';
 
+
+
 function App() {
   return (
     <AuthProvider>
