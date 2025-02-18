@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const projectListContainerStyle = {
     width: '80%',
@@ -53,8 +54,14 @@ const ProjectList = ({ projects }) => {
                 <tbody>
                   {groupedProjects[year].map(project => (
                     <tr key={project.id}>
-                      <td style={tdStyle}>{new Date(project.start_date).toLocaleDateString()}</td>
-                      <td style={tdStyle}>{project.name}</td>
+                      <td style={tdStyle}>
+                        {new Date(project.start_date).toLocaleDateString()}
+                        </td>
+                      <td style={tdStyle}>
+                        <Link to={`/projects/${project.id}`}>
+                          {project.name}
+                        </Link>
+                        </td>
                     </tr>
                   ))}
                 </tbody>

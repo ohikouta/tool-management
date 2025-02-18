@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import SwotPage from './pages/SwotPage';
 import FourPPage from './pages/FourPPage';
+import ProjectDetail from './pages/ProjectDetail';
 import ProtectedRoute from './routes/ProtectedRoute';
 
 
@@ -32,6 +33,11 @@ function App() {
           <Route path="/4p" element={
             <ProtectedRoute>
               <FourPPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/projects/:id" element={
+            <ProtectedRoute>
+              <ProjectDetail />
             </ProtectedRoute>
           } />
         </Routes>
