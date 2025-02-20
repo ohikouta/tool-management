@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: containers/Dockerfile  # Django 用の Dockerfile
     environment:
+      - DJANGO_SETTINGS_MODULE=myproject.settings
       - PYTHONPATH=/app/src
       # 例えば追加
       - REDIS_HOST=redis

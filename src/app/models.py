@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -33,7 +36,6 @@ class FourPAnalysis(models.Model):
 
     def __str__(self):
         return f"4P分析 {self.id}"
-
 
 
 class SWOTAnalysis(models.Model):
@@ -90,3 +92,25 @@ class Project(models.Model):
     def __str__(self):
         return f"{self.start_date.year} - {self.name}"
 
+class ChatRoom(models.Model):
+    room_type = models.CharField(max_length=50)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    related_object = GenericForeignKey('content_type', 'object_id')
+    # チャットルームの名前や説明
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+
+    members = models.ManyToManyField(User, related_name='chatrooms', blank=True)
+
+    def __str__(self):
+        return self.name
+
+class ChatMessage(models.Model):
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender.username}: {self.message[:20]}"

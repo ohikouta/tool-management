@@ -27,6 +27,7 @@ from app.views import (
     csrf_token_view,
     ProjectViewSet,
     UserListView,
+    get_chat_messages,
 )
 
 # DRFのDefaultRouterを利用してSWOTAnalysisViewSetのエンドポイントを自動生成
@@ -44,6 +45,7 @@ urlpatterns = [
     path('api/csrf/', csrf_token_view, name='csrf'),
     path('api/current-user/', CurrentUserView.as_view(), name='current-user'),
     path('api/users/', UserListView.as_view(), name='user-list'),
+    path('api/chat/<str:room_id>/messages/', get_chat_messages, name='chat-messages'),
     # DRFのルーターで生成されたAPIエンドポイントを/api/以下に統合
     path('api/', include(router.urls)),
 ]

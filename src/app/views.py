@@ -9,17 +9,18 @@ from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, generics, permissions
-from .models import SWOTAnalysis, CrossSWOT, Project
+from .models import SWOTAnalysis, CrossSWOT, Project, ChatRoom, ChatMessage
 
 # Serializerの読み込み
 from .serializers import (SWOTAnalysisSerializer, 
                           CrossSWOTSerializer, 
                           UserRegistrationSerializer,
                           ProjectSerializer,
-                          UserSerializer
+                          UserSerializer,
+                          ChatMessageSerializer,
                           )
 
 import logging
@@ -125,3 +126,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project.members.add(user)
         return Response({"detail": f"User {user.username} added to project."}, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_chat_messages(request, room_id):
+    """
+    指定した room_id (ここでは ChatRoom の id を想定) に属するチャットメッセージを返す
+    """
+    try:
+        room = ChatRoom.objects.get(id=room_id)
+    except ChatRoom.DoesNotExist:
+        return Response({"detail": "Chat room not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    # メッセージをタイムスタンプ順に取得（古い順に並べる）
+    messages = ChatMessage.objects.filter(room=room).order_by("timestamp")
+    serializer = ChatMessageSerializer(messages, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

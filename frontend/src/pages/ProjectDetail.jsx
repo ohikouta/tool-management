@@ -7,6 +7,8 @@ function ProjectDetail() {
   const { id } = useParams();   // ルートパラメータからidを取得
   const [project, setProject] = useState(null);
 
+
+
   const getCsrfToken = () => {
     const match = document.cookie.match(/csrftoken=([\w-]+)/);
     return match ? match[1] : null;

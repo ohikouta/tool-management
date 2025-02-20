@@ -1,24 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { AuthContext } from '../../contexts/AuthContext';
 
 function ChatComponent({ roomId }) {
-  const [messages, setMessages] = useState([]);
+  const { user, loading } = useContext(AuthContext);
+  const [messages, setMessages] = useState([]); // 各メッセージは { sender, message } のオブジェクト
   const [input, setInput] = useState('');
   const [socket, setSocket] = useState(null);
+  const [loadingHistory, setLoadingHistory] = useState(true);
 
-  
+  console.log("ChatComponent: loading =", loading, "user =", user);
 
+  // チャット履歴のロード
   useEffect(() => {
-    // WebSocket 接続
+    console.log("Fetching chat history, current user:", user);
+    async function fetchChatHistory() {
+      try {
+        const response = await fetch(`http://localhost:8000/api/chat/${roomId}/messages/`, {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Fetched messages:", data);
+          setMessages(data);
+        } else {
+          console.error("Failed to fetch chat history");
+        }
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
+      } finally {
+        setLoadingHistory(false);
+      }
+    }
+    fetchChatHistory();
+  }, [roomId, user]);
+
+  // WebSocket 接続の処理
+  useEffect(() => {
     const newSocket = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}/`);
     setSocket(newSocket);
-    console.log('WebSocket connected');
-    // メッセージ受信時の処理
-    newSocket.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      setMessages(prev => [...prev, data.message]);
+    
+    newSocket.onopen = () => {
+      console.log('WebSocket connected');
     };
 
-    // クリーンアップ
+    newSocket.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        console.log("Received message via WebSocket:", data);
+        // data に sender と message が含まれる前提
+        setMessages(prev => [...prev, { sender: data.sender, message: data.message }]);
+      } catch (err) {
+        console.error('Error parsing message:', err);
+      }
+    };
+
+    newSocket.onerror = (err) => {
+      console.error('WebSocket error:', err);
+    };
+
     return () => {
       newSocket.close();
     };
@@ -26,23 +65,63 @@ function ChatComponent({ roomId }) {
 
   const sendMessage = () => {
     if (socket && input.trim()) {
-      socket.send(JSON.stringify({ message: input }));
-      setInput('');
+      const payload = {
+        sender: user ? user.username : "Anonymous",
+        message: input.trim(),
+      };
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(payload));
+        setInput('');
+      } else {
+        console.warn('WebSocket is not open.');
+      }
     }
   };
 
   return (
     <div>
-      <div style={{ border: '1px solid #ccc', height: '200px', overflowY: 'auto' }}>
-        {messages.map((msg, index) => (
-          <div key={index}>{msg}</div>
-        ))}
-      </div>
+      <h2>Chat Room: {roomId}</h2>
+      {loadingHistory ? (
+        <div>Loading chat history...</div>
+      ) : (
+        <div style={{ border: '1px solid #ccc', height: '300px', overflowY: 'auto', padding: '8px' }}>
+          {messages.map((msg, index) => {
+            console.log("Rendering message:", msg);
+            return (
+              <div
+                key={index}  // 可能なら msg.id など一意なIDに変更する
+                style={{
+                  textAlign: user && msg.sender === user.username ? 'right' : 'left',
+                  marginBottom: '10px'
+                }}
+              >
+                {/* 送信者ラベルを常に表示。sender がない場合は "Unknown" を表示 */}
+                <div style={{ fontSize: '0.8em', color: '#555', marginBottom: '4px' }}>
+                  {msg.sender ? (user && msg.sender === user.username ? "You" : msg.sender) : "Unknown"}
+                </div>
+                <div
+                  style={{
+                    display: 'inline-block',
+                    background: user && msg.sender === user.username ? '#dcf8c6' : 'gray',
+                    padding: '8px 12px',
+                    borderRadius: '10px',
+                    maxWidth: '70%',
+                  }}
+                >
+                  {msg.message}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
       <input
         type="text"
+        placeholder="メッセージを入力..."
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+        style={{ width: '80%', marginRight: '5px' }}
       />
       <button onClick={sendMessage}>送信</button>
     </div>

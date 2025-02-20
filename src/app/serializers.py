@@ -5,7 +5,8 @@ from .models import (
     SWOTItem, 
     CrossSWOT, 
     CrossSWOTItem,
-    Project
+    Project,
+    ChatMessage,
     )
 
 
@@ -82,7 +83,12 @@ class ProjectSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Project.objects.create(user=self.context['request'].user, **validated_data)
 
+class ChatMessageSerializer(serializers.ModelSerializer):
+    sender = serializers.CharField(source='sender.username')
 
+    class Meta:
+        model = ChatMessage
+        fields = ['sender', 'message', 'timestamp']
 
 """以下学習用メモ
 【CrossSWOTItemSerializer】
