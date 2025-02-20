@@ -43,9 +43,11 @@ function Dashboard() {
       }
       const data = await response.json();
       setProjects(data);
+      console.log('Fetched projects:', data);
     } catch (err) {
       console.error('プロジェクト取得エラー:', err);
     }
+    console.log(projects);
     setLoading(false);
   }
 

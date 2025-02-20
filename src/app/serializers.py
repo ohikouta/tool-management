@@ -14,7 +14,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
+        fields = ['username', 'email', 'password']
     
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -66,14 +66,22 @@ class CrossSWOTSerializer(serializers.ModelSerializer):
             CrossSWOTItem.objects.create(cross_swot=cross_swot, **item)
         return cross_swot
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
+
 class ProjectSerializer(serializers.ModelSerializer):
+    members = UserSerializer(many=True, read_only=True)
+
     class Meta:
         model = Project
-        fields = ['id', 'start_date', 'name', 'user']
+        fields = ['id', 'start_date', 'name', 'user', 'members']
         read_only_fields = ['id', 'user']
     
     def create(self, validated_data):
         return Project.objects.create(user=self.context['request'].user, **validated_data)
+
 
 
 """以下学習用メモ

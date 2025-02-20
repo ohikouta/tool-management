@@ -1,24 +1,30 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+
 
 # DRF
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, generics, permissions
 from .models import SWOTAnalysis, CrossSWOT, Project
 
 # Serializerの読み込み
 from .serializers import (SWOTAnalysisSerializer, 
                           CrossSWOTSerializer, 
                           UserRegistrationSerializer,
-                          ProjectSerializer
+                          ProjectSerializer,
+                          UserSerializer
                           )
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 @ensure_csrf_cookie
 def csrf_token_view(request):
@@ -27,6 +33,12 @@ def csrf_token_view(request):
     """
     return JsonResponse({'detail': 'CSRF cookie has been set'})
 
+User = get_user_model()
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -94,5 +106,22 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Project.objects.filter(user=self.request.user)
+        user = self.request.user
+        logger.debug(f"Request User: {user} (ID: {user.id})")
+        return Project.objects.filter(
+            Q(user=user) | Q(members=user)
+        ).distinct()
+    
+    @action(detail=True, methods=['post'], url_path='invite-member')
+    def invite_member(self, request, pk=None):
+        project = self.get_object()
+
+        user_id = request.data.get('user_id')
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        project.members.add(user)
+        return Response({"detail": f"User {user.username} added to project."}, status=status.HTTP_200_OK)
 

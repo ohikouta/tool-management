@@ -3,17 +3,30 @@ import React, { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
+// 共通の CSRF トークン取得関数
+const getCsrfToken = () => {
+  const match = document.cookie.match(/csrftoken=([\w-]+)/);
+  return match ? match[1] : null;
+};
+
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
 
   const handleLogout = async () => {
     try {
+      const csrfToken = getCsrfToken();
       const response = await fetch('http://localhost:8000/api/auth/logout/', {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken, // CSRF ヘッダーを追加
+        },
       });
       if (response.ok) {
         logout();
+      } else {
+        console.error('Logout failed:', response.statusText);
       }
     } catch (error) {
       console.error('ログアウトエラー:', error);

@@ -85,7 +85,8 @@ class Project(models.Model):
     start_date = models.DateField()
     name = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    members = models.ManyToManyField(User, related_name='participating_projects', blank=True)
 
     def __str__(self):
-        return f"{self.year} - {self.name}"
+        return f"{self.start_date.year} - {self.name}"
 

@@ -26,6 +26,7 @@ from app.views import (
     CrossSWOTViewSet,
     csrf_token_view,
     ProjectViewSet,
+    UserListView,
 )
 
 # DRFのDefaultRouterを利用してSWOTAnalysisViewSetのエンドポイントを自動生成
@@ -42,6 +43,7 @@ urlpatterns = [
     path('api/auth/logout/', UserLogoutView.as_view(), name='api_logout'),
     path('api/csrf/', csrf_token_view, name='csrf'),
     path('api/current-user/', CurrentUserView.as_view(), name='current-user'),
+    path('api/users/', UserListView.as_view(), name='user-list'),
     # DRFのルーターで生成されたAPIエンドポイントを/api/以下に統合
     path('api/', include(router.urls)),
 ]

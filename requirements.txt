@@ -1,6 +1,9 @@
-Django==3.2.13
-djangorestframework==3.12.4
+Django==4.0.5
+djangorestframework==3.14.0
 gunicorn==20.1.0
 psycopg2-binary==2.9.3
 python-decouple
 django-cors-headers
+channels==4.0.0         # 例：使用するバージョンに合わせて調整してください
+channels-redis==4.0.0   # channels-redis も同様にバージョンを合わせる
+daphne

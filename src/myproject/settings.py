@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
+    'channels',
     'corsheaders',
     'rest_framework',
 ]
@@ -43,6 +44,16 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'myproject.urls'     # 例
 WSGI_APPLICATION = 'myproject.wsgi.application'
+ASGI_APPLICATION = 'myproject.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis', 6379)],  # or your Redis URL
+        },
+    },
+}
 
 TEMPLATES = [
     {
@@ -112,6 +123,39 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',  # フロントエンドのオリジン
+    'http://localhost:8001'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+
+# 既存の設定の下あたりに追加
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+    'http://localhost:8001'
+]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'formatters': {
+        'simple': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+        },
+    },
+    'loggers': {
+        # あなたのアプリのモジュール名（例: app）に対して
+        'app': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        # その他のロガー（必要なら）
+    },
+}
