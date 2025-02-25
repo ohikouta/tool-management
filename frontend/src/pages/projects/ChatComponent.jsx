@@ -102,7 +102,7 @@ function ChatComponent({ roomId }) {
                 <div
                   style={{
                     display: 'inline-block',
-                    background: user && msg.sender === user.username ? '#dcf8c6' : 'gray',
+                    background: user && msg.sender === user.username ? 'green' : 'gray',
                     padding: '8px 12px',
                     borderRadius: '10px',
                     maxWidth: '70%',

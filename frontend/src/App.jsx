@@ -6,6 +6,7 @@ import SwotPage from './pages/SwotPage';
 import FourPPage from './pages/FourPPage';
 import ProjectDetail from './pages/ProjectDetail';
 import ProtectedRoute from './routes/ProtectedRoute';
+import SwotEditPage from './pages/projects/SwotEditPage';
 
 
 
@@ -38,6 +39,11 @@ function App() {
           <Route path="/projects/:id" element={
             <ProtectedRoute>
               <ProjectDetail />
+            </ProtectedRoute>
+          } />
+          <Route path="/projects/:project_id/swot-edit/:swot_id?" element={
+            <ProtectedRoute>
+              <SwotEditPage />
             </ProtectedRoute>
           } />
         </Routes>

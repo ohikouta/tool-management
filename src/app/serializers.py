@@ -36,7 +36,7 @@ class SWOTAnalysisSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = SWOTAnalysis
-        fields = ['id', 'user', 'title', 'created_at', 'items']
+        fields = ['id', 'user', 'project', 'title', 'created_at', 'items']
         read_only_fields = ['id', 'created_at', 'user']
 
     def create(self, validated_data):
@@ -74,10 +74,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     members = UserSerializer(many=True, read_only=True)
+    swot_analysis = SWOTAnalysisSerializer(many=True, read_only=True)
 
     class Meta:
         model = Project
-        fields = ['id', 'start_date', 'name', 'user', 'members']
+        fields = ['id', 'start_date', 'name', 'user', 'members', 'swot_analysis']
         read_only_fields = ['id', 'user']
     
     def create(self, validated_data):

@@ -38,9 +38,44 @@ class FourPAnalysis(models.Model):
         return f"4P分析 {self.id}"
 
 
+class Project(models.Model):
+    start_date = models.DateField()
+    name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    members = models.ManyToManyField(User, related_name='participating_projects', blank=True)
+
+    def __str__(self):
+        return f"{self.start_date.year} - {self.name}"
+
+class ChatRoom(models.Model):
+    room_type = models.CharField(max_length=50)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    related_object = GenericForeignKey('content_type', 'object_id')
+    # チャットルームの名前や説明
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+
+    members = models.ManyToManyField(User, related_name='chatrooms', blank=True)
+
+    def __str__(self):
+        return self.name
+
+class ChatMessage(models.Model):
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender.username}: {self.message[:20]}"
+
+
+
 class SWOTAnalysis(models.Model):
     """SWOT分析のメタ情報を管理"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='swot_analysis')
     title = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -82,35 +117,3 @@ class CrossSWOTItem(models.Model):
     quadrant = models.CharField(max_length=2,choices=QUADRANT_CHOICES)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-
-class Project(models.Model):
-    start_date = models.DateField()
-    name = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    members = models.ManyToManyField(User, related_name='participating_projects', blank=True)
-
-    def __str__(self):
-        return f"{self.start_date.year} - {self.name}"
-
-class ChatRoom(models.Model):
-    room_type = models.CharField(max_length=50)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
-    object_id = models.PositiveIntegerField(null=True, blank=True)
-    related_object = GenericForeignKey('content_type', 'object_id')
-    # チャットルームの名前や説明
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-
-    members = models.ManyToManyField(User, related_name='chatrooms', blank=True)
-
-    def __str__(self):
-        return self.name
-
-class ChatMessage(models.Model):
-    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
-    sender = models.ForeignKey(User, on_delete=models.CASCADE)
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.sender.username}: {self.message[:20]}"

@@ -28,6 +28,8 @@ from app.views import (
     ProjectViewSet,
     UserListView,
     get_chat_messages,
+    PersonalSWOTAnalysisViewSet,
+    ProjectSWOTAnalysisViewSet,
 )
 
 # DRFのDefaultRouterを利用してSWOTAnalysisViewSetのエンドポイントを自動生成
@@ -46,6 +48,27 @@ urlpatterns = [
     path('api/current-user/', CurrentUserView.as_view(), name='current-user'),
     path('api/users/', UserListView.as_view(), name='user-list'),
     path('api/chat/<str:room_id>/messages/', get_chat_messages, name='chat-messages'),
+    # 個人用 SWOT 分析のエンドポイント
+    path('api/personal-swot/', PersonalSWOTAnalysisViewSet.as_view({
+        'get': 'list',
+        'post': 'create'
+    }), name='personal-swot-list'),
+    path('api/personal-swot/<int:pk>/', PersonalSWOTAnalysisViewSet.as_view({
+        'get': 'retrieve',
+        'put': 'update',
+        'delete': 'destroy'
+    }), name='personal-swot-detail'),
+    
+    # プロジェクト用 SWOT 分析のエンドポイント
+    path('api/projects/<int:project_id>/swot/', ProjectSWOTAnalysisViewSet.as_view({
+        'get': 'list',
+        'post': 'create'
+    }), name='project-swot-list'),
+    path('api/projects/<int:project_id>/swot/<int:pk>/', ProjectSWOTAnalysisViewSet.as_view({
+        'get': 'retrieve',
+        'put': 'update',
+        'delete': 'destroy'
+    }), name='project-swot-detail'),
     # DRFのルーターで生成されたAPIエンドポイントを/api/以下に統合
     path('api/', include(router.urls)),
 ]

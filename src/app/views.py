@@ -2,6 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
 
@@ -91,6 +92,35 @@ class SWOTAnalysisViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # 現在のユーザーを分析に紐づける
         serializer.save(user=self.request.user)
+
+class PersonalSWOTAnalysisViewSet(viewsets.ModelViewSet):
+    serializer_class = SWOTAnalysisSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return SWOTAnalysis.objects.filter(
+            user=self.request.user,
+            project__isnull=True
+        )
+
+    def perform_create(self, serializer):
+        # 個人用の場合は project=None として保存
+        serializer.save(user=self.request.user, project=None)
+
+
+class ProjectSWOTAnalysisViewSet(viewsets.ModelViewSet):
+    serializer_class = SWOTAnalysisSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        project_id = self.kwargs.get('project_id')
+        return SWOTAnalysis.objects.filter(project_id=project_id)
+    
+    def perform_create(self, serializer):
+        project_id = self.kwargs.get('project_id')
+        project = get_object_or_404(Project, id=project_id)
+        serializer.save(user=self.request.user, project=project)
+
 
 class CrossSWOTViewSet(viewsets.ModelViewSet):
     serializer_class = CrossSWOTSerializer

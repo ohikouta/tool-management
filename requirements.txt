@@ -7,3 +7,5 @@ django-cors-headers
 channels==4.0.0         # 例：使用するバージョンに合わせて調整してください
 channels-redis==4.0.0   # channels-redis も同様にバージョンを合わせる
 daphne
+django-extensions
+pygraphviz
