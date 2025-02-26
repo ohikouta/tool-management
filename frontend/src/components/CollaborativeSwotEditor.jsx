@@ -109,7 +109,12 @@ function CollaborativeSwotEditor({ swotId, projectId, initialTitle, initialItems
   // 各アイテム変更時のハンドラー
   const handleItemChange = (category, index, value) => {
     const updatedItems = { ...items };
-    updatedItems[category][index] = value;
+    // 既存アイテムがオブジェクトの場合は content を更新、文字列の場合は直接更新
+    if (typeof updatedItems[category][index] === 'object') {
+      updatedItems[category][index] = { ...updatedItems[category][index], content: value };
+    } else {
+      updatedItems[category][index] = value;
+    }
     setItems(updatedItems);
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({
@@ -126,6 +131,13 @@ function CollaborativeSwotEditor({ swotId, projectId, initialTitle, initialItems
   const handleAddItem = (category) => {
     const updatedItems = { ...items };
     updatedItems[category].push('');
+    setItems(updatedItems);
+  };
+
+  // アイテム削除
+  const handleDeleteItem = (category, index) => {
+    const updatedItems = { ...items };
+    updatedItems[category].splice(index, 1);
     setItems(updatedItems);
   };
 
@@ -160,12 +172,23 @@ function CollaborativeSwotEditor({ swotId, projectId, initialTitle, initialItems
 
   // 保存ボタンのハンドラー
   const handleSave = async () => {
-    // itemsのオブジェクトからリスト形式に変換
+    // items のオブジェクトをリスト形式に変換
     const transformedItems = [];
     for (const category in items) {
-      items[category].forEach(content => {
-        if (content.trim() !== '') {
-          transformedItems.push({ category, content });
+      items[category].forEach(item => {
+        if (typeof item === 'object') {
+          if (item.content && item.content.trim() !== '') {
+            // 既存アイテムの場合、ID があるならそれも含める
+            if (item.id) {
+              transformedItems.push({ id: item.id, category, content: item.content });
+            } else {
+              transformedItems.push({ category, content: item.content });
+            }
+          }
+        } else if (typeof item === 'string') {
+          if (item.trim() !== '') {
+            transformedItems.push({ category, content: item });
+          }
         }
       });
     }
@@ -204,7 +227,6 @@ function CollaborativeSwotEditor({ swotId, projectId, initialTitle, initialItems
   return (
     <div style={{ padding: '20px' }}>
       <h2>SWOT 分析の共同編集</h2>
-      {/* ここで全体の編集中ユーザー一覧を表示するなども可能 */}
       <div>
         <label>タイトル:</label>
         <input
@@ -217,11 +239,12 @@ function CollaborativeSwotEditor({ swotId, projectId, initialTitle, initialItems
         <div key={category} style={{ marginBottom: '20px' }}>
           <h3>{category}</h3>
           {items[category].map((item, index) => {
-            // 各フィールドに対して、編集中状態なら色を変更してラベルを表示
             const fieldKey = `${category}-${index}`;
             const editingInfo = editingState[fieldKey];
+            // ここで item が文字列の場合は直接表示、オブジェクトの場合は item.content を表示
+            const value = typeof item === 'object' ? item.content : item;
             return (
-              <div key={index} style={{ marginBottom: '10px', position: 'relative' }}>
+              <div key={index} style={{ marginBottom: '10px', position: 'relative', paddingRight: '24px' }}>
                 {editingInfo && (
                   <div style={{
                     position: 'absolute',
@@ -237,7 +260,7 @@ function CollaborativeSwotEditor({ swotId, projectId, initialTitle, initialItems
                   </div>
                 )}
                 <input
-                  value={item}
+                  value={value}
                   onChange={(e) => handleItemChange(category, index, e.target.value)}
                   placeholder={`Enter ${category} idea`}
                   style={{
@@ -249,6 +272,23 @@ function CollaborativeSwotEditor({ swotId, projectId, initialTitle, initialItems
                   onFocus={() => startEditingField(category, index)}
                   onBlur={() => stopEditingField(category, index)}
                 />
+                {/* 削除ボタン。ここでは常時表示していますが、CSSで hover 時に表示するように調整可能です */}
+                <button 
+                  onClick={() => handleDeleteItem(category, index)}
+                  style={{
+                    position: 'absolute',
+                    right: '4px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'red',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                >
+                  ×
+                </button>
               </div>
             );
           })}

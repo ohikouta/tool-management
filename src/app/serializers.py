@@ -46,6 +46,42 @@ class SWOTAnalysisSerializer(serializers.ModelSerializer):
         for item in items_data:
             SWOTItem.objects.create(analysis=analysis, **item)
         return analysis
+    
+    def update(self, instance, validated_data):
+        # items の更新データを取り出す
+        items_data = validated_data.pop('items', [])
+        
+        # SWOT 分析自体のフィールド更新（例：タイトルなど）
+        instance.title = validated_data.get('title', instance.title)
+        instance.save()
+
+        # クライアントから送られてきたアイテムのID一覧を抽出
+        sent_ids = [item_data.get('id') for item_data in items_data if item_data.get('id')]
+
+        # 既存のアイテムを取得し、辞書にする（id をキーとして）
+        item_mapping = {item.id: item for item in instance.items.all()}
+
+        # 既存のうち、クライアントから送信されていないアイテムを削除する
+        for item in instance.items.all():
+            if item.id not in sent_ids:
+                item.delete()
+
+        # クライアントから送られてきた各アイテムデータについて更新または新規作成を行う
+        for item_data in items_data:
+            item_id = item_data.get('id', None)
+            if item_id and item_id in item_mapping:
+                # 既存アイテムの更新
+                item_instance = item_mapping[item_id]
+                for attr, value in item_data.items():
+                    setattr(item_instance, attr, value)
+                item_instance.save()
+            else:
+                # 新しいアイテムの作成
+                instance.items.create(**item_data)
+
+        return instance
+
+    
 
 class CrossSWOTItemSerializer(serializers.ModelSerializer):
     class Meta:
